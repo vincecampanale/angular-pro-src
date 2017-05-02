@@ -34,13 +34,17 @@ import { User } from './auth-form/auth-form.interface';
       <button (click)="destroyComponent()" class="destroy">
         Destroy
       </button>
+      <button (click)="moveComponent()" class="move">
+        Move Component
+      </button>
       <div #entry></div>
     </div>
   `
 })
 export class AppComponent implements AfterContentInit {
 
-  component: ComponentRef<AuthFormComponent>;
+  createAccountComponent: ComponentRef<AuthFormComponent>;
+  loginComponent: ComponentRef<AuthFormComponent>;
 
   @ViewChild('entry', { read: ViewContainerRef }) entry: ViewContainerRef;
 
@@ -49,21 +53,28 @@ export class AppComponent implements AfterContentInit {
   ) { }
 
   ngAfterContentInit() {
-    // this.entry.createComponent(authFormFactory);
+    const authFormFactory = this.resolver.resolveComponentFactory(AuthFormComponent);
+    this.entry.createComponent(authFormFactory);
   }
 
   createComponent() {
-    const authFormFactory = this.resolver.resolveComponentFactory(AuthFormComponent);
-    if (!this.component) { this.component = this.entry.createComponent(authFormFactory, 0) };
-    this.component.instance.title = 'Create account';
-    this.component.instance.submitted.subscribe(this.loginUser);
+    if (!this.createAccountComponent) {
+      const authFormFactory = this.resolver.resolveComponentFactory(AuthFormComponent);
+      this.createAccountComponent = this.entry.createComponent(authFormFactory, 0);
+      this.createAccountComponent.instance.title = 'Create account';
+      this.createAccountComponent.instance.submitted.subscribe(this.loginUser);
+    }
   }
 
   destroyComponent() {
-    if (this.component) { 
-      this.component.destroy(); 
-      this.component = null;
+    if (this.createAccountComponent) {
+      this.createAccountComponent.destroy();
+      this.createAccountComponent = null;
     }
+  }
+
+  moveComponent() {
+    this.entry.move(this.createAccountComponent.hostView, 1);
   }
 
   loginUser(user: User) {
