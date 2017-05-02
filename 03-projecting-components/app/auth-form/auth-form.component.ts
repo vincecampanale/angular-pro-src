@@ -1,4 +1,4 @@
-import { Component, Output, ElementRef, ChangeDetectorRef, ViewChild, ViewChildren, AfterViewInit, EventEmitter, ContentChildren, QueryList, AfterContentInit } from '@angular/core';
+import { Component, Output, ElementRef, Renderer, ChangeDetectorRef, ViewChild, ViewChildren, AfterViewInit, EventEmitter, ContentChildren, QueryList, AfterContentInit } from '@angular/core';
 
 
 
@@ -9,6 +9,9 @@ import { User } from './auth-form.interface';
 
 @Component({
   selector: 'auth-form',
+  styles: [`
+    .email { border-color: #9f72e6; }
+  `],
   template: `
     <div>
       <form (ngSubmit)="onSubmit(form.value)" #form="ngForm">
@@ -42,19 +45,29 @@ export class AuthFormComponent implements AfterContentInit {
   @Output() submitted: EventEmitter<User> = new EventEmitter<User>();
 
   // Constructor (Dependency Injections)
-  constructor(private cd: ChangeDetectorRef) { }
-
+  constructor(
+    private cd: ChangeDetectorRef,
+    private renderer: Renderer
+  ) { }
 
   // Lifecycle hooks
-
   // if you want to change data before view has been initialized, make sure you use ngAfterContentInit() instead of ngAfterViewInit()
   ngAfterViewInit() {
-    console.log(this.email);
+
+    // the idea behind the renderer is that it is PLATFORM AGNOSTIC -- Angular abstracts these things for you and implements them according to the platform or environment you are deploying them to
+    this.renderer.setElementAttribute(this.email.nativeElement, 'placeholder', 'Enter your email address');
+    this.renderer.setElementClass(this.email.nativeElement, 'email', true);
+    this.renderer.invokeElementMethod(this.email.nativeElement, 'focus');
+
+    // this.email.nativeElement.setAttribute('placeholder', 'Enter your email address');
+    // this.email.nativeElement.classList.add('email');
+    // this.email.nativeElement.focus();
+
     if (this.message) {
       // setTimeout(() => { // hacky solution for changing the view after it's been rendered -- not required in production
-        this.message.forEach((message) => {
-          message.days = 30;
-        });
+      this.message.forEach((message) => {
+        message.days = 30;
+      });
       // });
       this.cd.detectChanges();
     }
