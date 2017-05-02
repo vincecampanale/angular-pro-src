@@ -20,6 +20,7 @@ import { AuthMessageComponent } from './auth-message.component';
     AuthFormComponent,
     AuthRememberComponent
   ],
+  // for dynamic components
   entryComponents: [
     AuthFormComponent
   ]
