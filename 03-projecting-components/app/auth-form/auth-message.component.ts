@@ -9,6 +9,6 @@ import { Component } from '@angular/core';
     `
 })
 
-export class NameComponent {
+export class AuthMessageComponent {
     days: number = 7;
 }
